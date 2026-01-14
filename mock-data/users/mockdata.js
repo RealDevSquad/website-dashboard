@@ -38,7 +38,7 @@ const superUserDetails = {
   message: 'User returned successfully!',
   user: {
     id: 'XAF7rSUvk4p0d098qWYS',
-    profileURL: 'https://my.realdevsquad.com/identity',
+    profileURL: 'https://www.realdevsquad.com/identity',
     discordJoinedAt: '2020-02-01T08:33:38.278000+00:00',
     roles: {
       archived: false,
