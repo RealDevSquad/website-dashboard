@@ -130,11 +130,15 @@ function updateUserApplication({ isAccepted, isRequestChanges = false }) {
   const payload = { status: applicationStatus };
 
   const promises = [];
+  const feedback =
+    applicationTextarea && applicationTextarea.value
+      ? applicationTextarea.value.trim()
+      : '';
 
-  if (applicationTextarea && applicationTextarea.value) {
+  if (feedback) {
     promises.push(
       addApplicationFeedback(currentApplicationId, {
-        feedback: applicationTextarea.value,
+        feedback,
         status: applicationStatus,
       }),
     );
@@ -153,7 +157,7 @@ function updateUserApplication({ isAccepted, isRequestChanges = false }) {
         isDev,
         oldToastFunction: showToast,
         type: 'success',
-        message: 'Application updated successfully!',
+        message: 'application updated successfully!',
       });
       setTimeout(() => closeApplicationDetails(), 1000);
     })
@@ -737,5 +741,5 @@ applicationRejectButton.addEventListener('click', () =>
   updateUserApplication({ isAccepted: false }),
 );
 applicationRequestChangesButton.addEventListener('click', () => {
-  updateUserApplication({ isAccepted: false, isRequestChanges: true });
+  updateUserApplication({ isRequestChanges: true });
 });

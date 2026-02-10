@@ -787,37 +787,6 @@ body {
     width: 18%;
   }
 
-  .application-details .application-details-actions .application-details-nudge {
-    background-color: white;
-    color: var(--color-primary);
-    margin: 0 auto;
-    width: 18%;
-    border: 2px solid var(--color-primary);
-    padding: 8px 16px;
-    border-radius: 4px;
-  }
-
-  .application-details
-    .application-details-actions
-    .application-details-nudge:is(:hover, :active, :focus-visible) {
-    background: var(--color-primary);
-    color: var(--white);
-    transition: transform 0.2s ease;
-    will-change: transform;
-  }
-
-  .application-details
-    .application-details-actions
-    .application-details-nudge:hover {
-    transform: scale(1.05);
-  }
-
-  .application-details
-    .application-details-actions
-    .application-details-nudge:active {
-    animation: bounceBackAnimation 0.4s ease forwards;
-  }
-
   .application-details
     .application-details-actions
     .application-details-request-changes {
@@ -851,7 +820,6 @@ body {
     padding: 15px;
   }
 
-  .application-details .application-details-actions .application-details-nudge,
   .application-details .application-details-actions .application-details-accept,
   .application-details .application-details-actions .application-details-reject,
   .application-details
