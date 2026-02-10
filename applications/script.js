@@ -90,7 +90,14 @@ function updateUserApplication({ isAccepted, isRequestChanges = false }) {
   const applicationTextarea = document.querySelector('.application-textarea');
 
   if (isRequestChanges) {
-    if (!applicationTextarea || !applicationTextarea.value) {
+    if (!applicationTextarea || !applicationTextarea.value.trim()) {
+      showToastMessage({
+        isDev,
+        oldToastFunction: showToast,
+        type: 'error',
+        message: 'Please provide feedback before requesting changes.',
+      });
+      if (applicationTextarea) applicationTextarea.focus();
       return;
     }
     updateApplication({
@@ -100,16 +107,20 @@ function updateUserApplication({ isAccepted, isRequestChanges = false }) {
       },
     })
       .then(() => {
-        showToast({
-          message: 'Changes requested successfully!',
+        showToastMessage({
+          isDev,
+          oldToastFunction: showToast,
           type: 'success',
+          message: 'Changes requested successfully!',
         });
         setTimeout(() => closeApplicationDetails(), 1000);
       })
       .catch((error) => {
-        showToast({
-          message: error.message || 'Failed to request changes',
+        showToastMessage({
+          isDev,
+          oldToastFunction: showToast,
           type: 'error',
+          message: error.message || 'Failed to request changes',
         });
       });
     return;
@@ -283,7 +294,7 @@ function openApplicationDetails(application) {
 
     let descriptionClass = 'description';
     if (detail.isStatus) {
-      descriptionClass += ` status-${detail.description?.toLowerCase()}`;
+      descriptionClass += ` status-badge status-${detail.description?.toLowerCase()}`;
     }
 
     const applicationSectionDescription = createElement({

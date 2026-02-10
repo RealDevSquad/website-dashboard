@@ -117,28 +117,6 @@ async function updateApplication({ applicationPayload, applicationId }) {
   }
 }
 
-async function nudgeApplication(applicationId) {
-  try {
-    const res = await fetch(`${BASE_URL}/applications/${applicationId}/nudge`, {
-      method: 'PATCH',
-      credentials: 'include',
-      headers: {
-        'Content-type': 'application/json',
-      },
-    });
-
-    if (!res.ok) {
-      const error = await res.json();
-      throw error;
-    }
-
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    throw error;
-  }
-}
-
 async function addApplicationFeedback(applicationId, feedbackData) {
   try {
     const res = await fetch(
@@ -190,7 +168,6 @@ export {
   getApplications,
   getApplicationById,
   updateApplication,
-  nudgeApplication,
   addApplicationFeedback,
   getIsSuperUser,
   showToast,
