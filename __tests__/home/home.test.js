@@ -431,19 +431,19 @@ describe('Home Page', () => {
       },
       {
         name: 'Status',
-        link: 'https://my.realdevsquad.com/',
+        link: 'https://www.realdevsquad.com/status',
       },
       {
         name: 'Profile',
-        link: 'https://my.realdevsquad.com/profile',
+        link: 'https://www.realdevsquad.com/profile',
       },
       {
         name: 'Tasks',
-        link: 'https://my.realdevsquad.com/tasks',
+        link: 'https://status.realdevsquad.com/tasks',
       },
       {
         name: 'Identity',
-        link: 'https://my.realdevsquad.com/identity',
+        link: 'https://www.realdevsquad.com/identity',
       },
     ];
 
