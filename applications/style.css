@@ -15,6 +15,10 @@
     0px 4px 8px 3px rgba(0, 0, 0, 0.15);
   --color-green: green;
   --color-red-variant1: #f43030;
+  --color-orange: #f5a623;
+  --color-pending: #f5a623;
+  --color-accepted: #28a745;
+  --color-rejected: #dc3545;
 }
 
 .user-text-index {
@@ -458,6 +462,86 @@ body {
 .application-details
   .application-details-main
   .application-section
+  .description.status-pending {
+  color: var(--white);
+  background-color: var(--color-pending);
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  text-transform: capitalize;
+}
+
+.application-details
+  .application-details-main
+  .application-section
+  .description.status-accepted {
+  color: var(--white);
+  background-color: var(--color-accepted);
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  text-transform: capitalize;
+}
+
+.application-details
+  .application-details-main
+  .application-section
+  .description.status-rejected {
+  color: var(--white);
+  background-color: var(--color-rejected);
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  text-transform: capitalize;
+}
+
+.application-details .application-details-main .application-highlights {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.application-details
+  .application-details-main
+  .application-highlights
+  .application-highlight-item {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  padding: 10px;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: var(--elevation-1);
+}
+
+.application-details
+  .application-details-main
+  .application-highlights
+  .application-highlight-item
+  .section-title {
+  font-size: 12px;
+  text-decoration: none;
+  color: var(--color-gray);
+  margin-bottom: 5px;
+}
+
+.application-details
+  .application-details-main
+  .application-highlights
+  .application-highlight-item
+  .description {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.application-details
+  .application-details-main
+  .application-section
   .application-textarea {
   width: 90%;
   height: 150px;
@@ -480,7 +564,10 @@ body {
 }
 
 .application-details .application-details-actions .application-details-reject,
-.application-details .application-details-actions .application-details-accept {
+.application-details .application-details-actions .application-details-accept,
+.application-details
+  .application-details-actions
+  .application-details-request-changes {
   cursor: pointer;
   border: none;
   height: 95%;
@@ -489,13 +576,13 @@ body {
   font-size: 15px;
   font-weight: 700;
   line-height: normal;
+  padding: 8px 16px;
 }
 
 .application-details .application-details-actions .application-details-reject {
   color: var(--red-color);
   background-color: white;
   margin: 0 auto;
-  width: 40%;
   border: 2px solid var(--red-color);
 }
 
@@ -523,7 +610,6 @@ body {
 .application-details .application-details-actions .application-details-accept {
   background: var(--color-primary);
   margin: 0 auto;
-  width: 40%;
 }
 
 .application-details
@@ -543,6 +629,37 @@ body {
 .application-details
   .application-details-actions
   .application-details-accept:active {
+  animation: bounceBackAnimation 0.4s ease forwards;
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes {
+  background-color: white;
+  color: var(--color-orange, #f5a623);
+  margin: 0 auto;
+  width: 32%;
+  border: 2px solid var(--color-orange, #f5a623);
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes:is(:hover, :active, :focus-visible) {
+  background: var(--color-orange, #f5a623);
+  color: var(--white);
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes:hover {
+  transform: scale(1.05);
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes:active {
   animation: bounceBackAnimation 0.4s ease forwards;
 }
 
@@ -659,6 +776,50 @@ body {
     padding: 1rem;
   }
 }
+.application-details .application-details-actions .application-details-reject {
+  width: 18%;
+}
+
+.application-details .application-details-actions .application-details-accept {
+  width: 18%;
+}
+
+.application-details .application-details-actions .application-details-nudge {
+  background-color: white;
+  color: var(--color-primary);
+  margin: 0 auto;
+  width: 18%;
+  border: 2px solid var(--color-primary);
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.application-details
+  .application-details-actions
+  .application-details-nudge:is(:hover, :active, :focus-visible) {
+  background: var(--color-primary);
+  color: var(--white);
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+
+.application-details
+  .application-details-actions
+  .application-details-nudge:hover {
+  transform: scale(1.05);
+}
+
+.application-details
+  .application-details-actions
+  .application-details-nudge:active {
+  animation: bounceBackAnimation 0.4s ease forwards;
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes {
+  width: 24%;
+}
 
 @media screen and (max-width: 500px) {
   .application-details {
@@ -677,5 +838,34 @@ body {
 
   .application-card .user-info .company-name {
     max-width: 100%;
+  }
+  .application-details .application-details-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+    height: auto;
+    padding: 15px;
+  }
+
+  .application-details .application-details-actions .application-details-nudge,
+  .application-details .application-details-actions .application-details-accept,
+  .application-details .application-details-actions .application-details-reject,
+  .application-details
+    .application-details-actions
+    .application-details-request-changes {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .application-details .application-details-main .application-highlights {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .application-details
+    .application-details-main
+    .application-highlights
+    .application-highlight-item {
+    min-width: auto;
   }
 }

@@ -5,6 +5,7 @@ import {
   showToast,
   updateApplication,
   getApplicationById,
+  addApplicationFeedback,
 } from './utils.js';
 let nextLink;
 let isDataLoading = false;
@@ -32,6 +33,10 @@ const applicationAcceptButton = document.querySelector(
 const applicationRejectButton = document.querySelector(
   '.application-details-reject',
 );
+const applicationRequestChangesButton = document.querySelector(
+  '.application-details-request-changes',
+);
+
 const applyFilterButton = document.getElementById('apply-filter-button');
 const applicationContainer = document.querySelector('.application-container');
 const clearButton = document.getElementById('clear-button');
@@ -81,32 +86,63 @@ let currentApplicationId;
 
 let status = 'all';
 
-function updateUserApplication({ isAccepted }) {
+function updateUserApplication({ isAccepted, isRequestChanges = false }) {
   const applicationTextarea = document.querySelector('.application-textarea');
-  let status;
-  const payload = {};
 
-  if (isAccepted) status = 'accepted';
-  else status = 'rejected';
-
-  payload['status'] = status;
-
-  if (applicationTextarea.value) {
-    payload.feedback = applicationTextarea.value;
+  if (isRequestChanges) {
+    if (!applicationTextarea || !applicationTextarea.value) {
+      return;
+    }
+    updateApplication({
+      applicationId: currentApplicationId,
+      applicationPayload: {
+        feedback: applicationTextarea.value,
+      },
+    })
+      .then(() => {
+        showToast({
+          message: 'Changes requested successfully!',
+          type: 'success',
+        });
+        setTimeout(() => closeApplicationDetails(), 1000);
+      })
+      .catch((error) => {
+        showToast({
+          message: error.message || 'Failed to request changes',
+          type: 'error',
+        });
+      });
+    return;
   }
 
-  updateApplication({
-    applicationId: currentApplicationId,
-    applicationPayload: payload,
-  })
-    .then((res) => {
-      const updatedFeedback = payload.feedback || '';
-      applicationTextarea.value = updatedFeedback;
+  const applicationStatus = isAccepted ? 'accepted' : 'rejected';
+  const payload = { status: applicationStatus };
+
+  const promises = [];
+
+  if (applicationTextarea && applicationTextarea.value) {
+    promises.push(
+      addApplicationFeedback(currentApplicationId, {
+        feedback: applicationTextarea.value,
+        status: applicationStatus,
+      }),
+    );
+  }
+
+  promises.push(
+    updateApplication({
+      applicationId: currentApplicationId,
+      applicationPayload: payload,
+    }),
+  );
+
+  Promise.all(promises)
+    .then(() => {
       showToastMessage({
         isDev,
         oldToastFunction: showToast,
         type: 'success',
-        message: res.message,
+        message: 'Application updated successfully!',
       });
       setTimeout(() => closeApplicationDetails(), 1000);
     })
@@ -166,6 +202,21 @@ function openApplicationDetails(application) {
       {
         title: 'Status',
         description: application.status,
+        isStatus: true,
+      },
+      {
+        title: 'Application Score',
+        description:
+          application.applicationScore !== undefined
+            ? application.applicationScore
+            : 'N/A',
+        isHighlight: true,
+      },
+      {
+        title: 'Nudge Count',
+        description:
+          application.nudgeCount !== undefined ? application.nudgeCount : 'N/A',
+        isHighlight: true,
       },
       {
         title: 'Introduction',
@@ -210,26 +261,51 @@ function openApplicationDetails(application) {
 
   applicationDetailsMain.appendChild(title);
 
-  selectedApplication.applicationDetails.forEach((application) => {
+  const highlightsSection = createElement({
+    type: 'div',
+    attributes: { class: 'application-highlights' },
+  });
+
+  selectedApplication.applicationDetails.forEach((detail) => {
     const applicationSection = createElement({
       type: 'div',
-      attributes: { class: 'application-section' },
+      attributes: {
+        class: detail.isHighlight
+          ? 'application-section application-highlight-item'
+          : 'application-section',
+      },
     });
     const applicationSectionTitle = createElement({
       type: 'h2',
       attributes: { class: 'section-title' },
-      innerText: application.title,
+      innerText: detail.title,
     });
+
+    let descriptionClass = 'description';
+    if (detail.isStatus) {
+      descriptionClass += ` status-${detail.description?.toLowerCase()}`;
+    }
+
     const applicationSectionDescription = createElement({
       type: 'p',
-      attributes: { class: 'description' },
-      innerText: application.description,
+      attributes: { class: descriptionClass },
+      innerText: detail.description,
     });
 
     applicationSection.appendChild(applicationSectionTitle);
     applicationSection.appendChild(applicationSectionDescription);
-    applicationDetailsMain.appendChild(applicationSection);
+
+    if (detail.isHighlight) {
+      highlightsSection.appendChild(applicationSection);
+    } else {
+      applicationDetailsMain.appendChild(applicationSection);
+    }
   });
+
+  if (highlightsSection.children.length > 0) {
+    const titleElement = applicationDetailsMain.querySelector('.title');
+    titleElement.insertAdjacentElement('afterend', highlightsSection);
+  }
 
   const applicationSection = createElement({
     type: 'div',
@@ -258,6 +334,8 @@ function openApplicationDetails(application) {
   if (application.status === 'rejected') {
     applicationAcceptButton.classList.add('hidden');
     applicationRejectButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
+
     const applicationDetailsRejectedMsg = createElement({
       type: 'p',
       attributes: {
@@ -269,6 +347,8 @@ function openApplicationDetails(application) {
   } else if (application.status === 'accepted') {
     applicationAcceptButton.classList.add('hidden');
     applicationRejectButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
+
     const applicationDetailsAcceptedMsg = createElement({
       type: 'p',
       attributes: {
@@ -287,6 +367,11 @@ function openApplicationDetails(application) {
     applicationAcceptButton.disabled = false;
     applicationAcceptButton.style.cursor = 'pointer';
     applicationAcceptButton.classList.remove('disable-button');
+
+    applicationRequestChangesButton.classList.remove('hidden');
+    applicationRequestChangesButton.disabled = false;
+    applicationRequestChangesButton.style.cursor = 'pointer';
+    applicationRequestChangesButton.classList.remove('disable-button');
   }
 }
 
@@ -640,3 +725,6 @@ applicationAcceptButton.addEventListener('click', () =>
 applicationRejectButton.addEventListener('click', () =>
   updateUserApplication({ isAccepted: false }),
 );
+applicationRequestChangesButton.addEventListener('click', () => {
+  updateUserApplication({ isAccepted: false, isRequestChanges: true });
+});
