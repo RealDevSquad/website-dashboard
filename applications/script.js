@@ -102,6 +102,7 @@ function updateUserApplication({ isAccepted, isRequestChanges = false }) {
     updateApplication({
       applicationId: currentApplicationId,
       applicationPayload: {
+        status: 'changes_requested',
         feedback: applicationTextarea.value,
       },
     })
@@ -360,6 +361,21 @@ function openApplicationDetails(application) {
       innerText: 'Application was already accepted',
     });
     applicationDetailsActionsContainer.append(applicationDetailsAcceptedMsg);
+  } else if (application.status === 'changes_requested') {
+    applicationAcceptButton.classList.add('hidden');
+    applicationRejectButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
+
+    const applicationDetailsChangesRequestedMsg = createElement({
+      type: 'p',
+      attributes: {
+        class: 'application-details-changes-requested-msg',
+      },
+      innerText: 'Changes requested',
+    });
+    applicationDetailsActionsContainer.append(
+      applicationDetailsChangesRequestedMsg,
+    );
   } else {
     applicationRejectButton.disabled = false;
     applicationRejectButton.style.cursor = 'pointer';

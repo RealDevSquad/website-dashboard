@@ -118,6 +118,8 @@ async function updateApplication({ applicationPayload, applicationId }) {
 }
 
 function showToast({ message, type }) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
   toast.innerText = message;
 
   if (type === 'success') {
