@@ -5,7 +5,6 @@ import {
   showToast,
   updateApplication,
   getApplicationById,
-  addApplicationFeedback,
 } from './utils.js';
 let nextLink;
 let isDataLoading = false;
@@ -127,31 +126,20 @@ function updateUserApplication({ isAccepted, isRequestChanges = false }) {
   }
 
   const applicationStatus = isAccepted ? 'accepted' : 'rejected';
-  const payload = { status: applicationStatus };
-
-  const promises = [];
   const feedback =
     applicationTextarea && applicationTextarea.value
       ? applicationTextarea.value.trim()
       : '';
 
+  const payload = { status: applicationStatus };
   if (feedback) {
-    promises.push(
-      addApplicationFeedback(currentApplicationId, {
-        feedback,
-        status: applicationStatus,
-      }),
-    );
+    payload.feedback = feedback;
   }
 
-  promises.push(
-    updateApplication({
-      applicationId: currentApplicationId,
-      applicationPayload: payload,
-    }),
-  );
-
-  Promise.all(promises)
+  updateApplication({
+    applicationId: currentApplicationId,
+    applicationPayload: payload,
+  })
     .then(() => {
       showToastMessage({
         isDev,

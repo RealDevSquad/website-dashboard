@@ -117,32 +117,6 @@ async function updateApplication({ applicationPayload, applicationId }) {
   }
 }
 
-async function addApplicationFeedback(applicationId, feedbackData) {
-  try {
-    const res = await fetch(
-      `${BASE_URL}/applications/${applicationId}/feedback`,
-      {
-        method: 'PATCH',
-        credentials: 'include',
-        body: JSON.stringify(feedbackData),
-        headers: {
-          'Content-type': 'application/json',
-        },
-      },
-    );
-
-    if (!res.ok) {
-      const error = await res.json();
-      throw error;
-    }
-
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    throw error;
-  }
-}
-
 function showToast({ message, type }) {
   toast.innerText = message;
 
@@ -168,7 +142,6 @@ export {
   getApplications,
   getApplicationById,
   updateApplication,
-  addApplicationFeedback,
   getIsSuperUser,
   showToast,
 };
