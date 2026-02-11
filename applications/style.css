@@ -13,12 +13,9 @@
     0 1px 2px 0 rgba(0, 0, 0, 0.1);
   --elevation-3: 0px 1px 3px 0px rgba(0, 0, 0, 0.3),
     0px 4px 8px 3px rgba(0, 0, 0, 0.15);
-  --color-green: green;
-  --color-red-variant1: #f43030;
-  --color-orange: #f5a623;
-  --color-pending: #f5a623;
-  --color-accepted: #28a745;
-  --color-rejected: #dc3545;
+  --color-accepted: #16a34a;
+  --color-pending: #ca8a04;
+  --color-rejected: #dc2626;
 }
 
 .user-text-index {
@@ -224,7 +221,7 @@ body {
 }
 
 .clear-btn:hover {
-  background-color: var(--red-color);
+  background-color: var(--color-rejected);
   color: var(--white);
 }
 
@@ -577,16 +574,16 @@ body {
 }
 
 .application-details .application-details-actions .application-details-reject {
-  color: var(--red-color);
+  color: var(--color-rejected);
   background-color: white;
   margin: 0 auto;
-  border: 2px solid var(--red-color);
+  border: 2px solid var(--color-rejected);
 }
 
 .application-details
   .application-details-actions
   .application-details-reject:is(:hover, :active, :focus-visible) {
-  background: var(--red-color);
+  background: var(--color-rejected);
   color: var(--white);
   transition: transform 0.2s ease;
   will-change: transform;
@@ -633,16 +630,16 @@ body {
   .application-details-actions
   .application-details-request-changes {
   background-color: white;
-  color: var(--color-orange, #f5a623);
+  color: var(--color-pending);
   margin: 0 auto;
   width: 32%;
-  border: 2px solid var(--color-orange, #f5a623);
+  border: 2px solid var(--color-pending);
 }
 
 .application-details
   .application-details-actions
   .application-details-request-changes:is(:hover, :active, :focus-visible) {
-  background: var(--color-orange, #f5a623);
+  background: var(--color-pending);
   color: var(--white);
   transition: transform 0.2s ease;
   will-change: transform;
@@ -674,15 +671,15 @@ body {
 }
 
 .application-details-accepted-msg {
-  color: var(--color-green);
+  color: var(--color-accepted);
 }
 
 .application-details-rejected-msg {
-  color: var(--red-color);
+  color: var(--color-rejected);
 }
 
 .application-details-changes-requested-msg {
-  color: var(--color-orange, #f5a623);
+  color: var(--color-pending);
 }
 
 .unauthorized-text {
@@ -720,11 +717,11 @@ body {
 }
 
 .success {
-  background: var(--color-green);
+  background: var(--color-accepted);
 }
 
 .failure {
-  background: var(--color-red-variant1);
+  background: var(--color-rejected);
 }
 
 .disable-button {
@@ -779,7 +776,7 @@ body {
   }
 }
 
-@media screen and (min-width: 851px) {
+@media screen and (min-width: 48rem) {
   .application-details
     .application-details-actions
     .application-details-reject {

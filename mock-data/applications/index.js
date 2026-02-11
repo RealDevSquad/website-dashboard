@@ -3,7 +3,7 @@ const fetchedApplications = [
     id: 'lavEduxsb2C5Bl4s289P',
     createdAt: '2023-12-19T00:23:07.865Z',
     updatedAt: '2023-12-20T10:15:30.000Z',
-    applicationScore: 85,
+    score: 85,
     nudgeCount: 2,
     intro: {
       funFact:
@@ -37,7 +37,7 @@ const fetchedApplications = [
   {
     id: 'YwTi6zFNI3GlDsZVjD8C',
     createdAt: '2023-12-19T00:22:03.845Z',
-    applicationScore: 0,
+    score: 0,
     nudgeCount: 0,
     intro: {
       funFact:
@@ -70,7 +70,7 @@ const fetchedApplications = [
   {
     id: 'q2ZzerFKxdsUYMxoexS9',
     createdAt: '2023-12-19T00:21:26.595Z',
-    applicationScore: 42,
+    score: 42,
     nudgeCount: 5,
     intro: {
       funFact:
@@ -191,6 +191,7 @@ const fetchedApplications = [
       skills: 'REACT, NODE JS',
       institution: 'Christ church college',
     },
+    feedback: '',
     status: 'pending',
   },
 ];
@@ -199,7 +200,7 @@ const acceptedApplications = [
   {
     id: 'lavEduxsb2C5Bl4s289P',
     createdAt: '2023-12-19T00:23:07.865Z',
-    applicationScore: 90,
+    score: 90,
     nudgeCount: 1,
     intro: {
       funFact:
@@ -233,7 +234,7 @@ const acceptedApplications = [
   {
     id: 'YwTi6zFNI3GlDsZVjD8C',
     createdAt: '2023-12-19T00:22:03.845Z',
-    applicationScore: 0,
+    score: 0,
     nudgeCount: 0,
     intro: {
       funFact:
@@ -266,7 +267,7 @@ const acceptedApplications = [
   {
     id: 'q2ZzerFKxdsUYMxoexS9',
     createdAt: '2023-12-19T00:21:26.595Z',
-    applicationScore: 55,
+    score: 55,
     nudgeCount: 3,
     intro: {
       funFact:
@@ -333,7 +334,7 @@ const pendingApplications = [
   {
     id: 'lavEduxsb2C5Bl4s289P',
     createdAt: '2023-12-19T00:23:07.865Z',
-    applicationScore: 70,
+    score: 70,
     nudgeCount: 4,
     intro: {
       funFact:

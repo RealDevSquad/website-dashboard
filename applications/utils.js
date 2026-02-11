@@ -1,3 +1,5 @@
+import { showToastMessage } from '../components/toast/script.js';
+
 const BASE_URL = window.API_BASE_URL;
 
 function createElement({ type, attributes = {}, innerText }) {
@@ -96,14 +98,17 @@ async function getIsSuperUser(isDev) {
 
 async function updateApplication({ applicationPayload, applicationId }) {
   try {
-    const res = await fetch(`${BASE_URL}/applications/${applicationId}`, {
-      method: 'PATCH',
-      credentials: 'include',
-      body: JSON.stringify(applicationPayload),
-      headers: {
-        'Content-type': 'application/json',
+    const res = await fetch(
+      `${BASE_URL}/applications/${applicationId}/feedback`,
+      {
+        method: 'PATCH',
+        credentials: 'include',
+        body: JSON.stringify(applicationPayload),
+        headers: {
+          'Content-type': 'application/json',
+        },
       },
-    });
+    );
 
     if (!res.ok) {
       const error = await res.json();
