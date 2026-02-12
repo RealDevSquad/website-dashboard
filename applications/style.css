@@ -433,10 +433,7 @@ body {
   gap: 15px;
 }
 
-.application-details
-  .application-details-main
-  .application-section
-  .section-title {
+.section-title {
   color: var(--black-color);
   font-size: 18px;
   font-weight: 700;
@@ -445,10 +442,7 @@ body {
   margin: 0;
 }
 
-.application-details
-  .application-details-main
-  .application-section
-  .description {
+.description {
   color: var(--color-gray);
   font-size: 13px;
   font-style: normal;
@@ -457,10 +451,7 @@ body {
   margin: 0;
 }
 
-.application-details
-  .application-details-main
-  .application-section
-  .description.status-badge {
+.description.status-badge {
   color: var(--white);
   padding: 4px 12px;
   border-radius: 20px;
@@ -468,41 +459,29 @@ body {
   text-transform: capitalize;
 }
 
-.application-details
-  .application-details-main
-  .application-section
-  .description.status-pending {
+.description.status-pending {
   background-color: var(--color-pending);
 }
 
-.application-details
-  .application-details-main
-  .application-section
-  .description.status-accepted {
+.description.status-accepted {
   background-color: var(--color-accepted);
 }
 
-.application-details
-  .application-details-main
-  .application-section
-  .description.status-rejected {
+.description.status-rejected {
   background-color: var(--color-rejected);
 }
 
-.application-details .application-details-main .application-highlights {
+.application-highlights {
   display: flex;
-  gap: 20px;
+  gap: 1.25rem;
   flex-wrap: wrap;
   background-color: #f8f9fa;
-  padding: 15px;
+  padding: 1rem;
   border-radius: 10px;
   margin-bottom: 10px;
 }
 
-.application-details
-  .application-details-main
-  .application-highlights
-  .application-highlight-item {
+.application-highlight-item {
   flex: 1;
   min-width: 120px;
   text-align: center;
@@ -512,31 +491,20 @@ body {
   box-shadow: var(--elevation-1);
 }
 
-.application-details
-  .application-details-main
-  .application-highlights
-  .application-highlight-item
-  .section-title {
+.application-highlight-item .section-title {
   font-size: 12px;
   text-decoration: none;
   color: var(--color-gray);
   margin-bottom: 5px;
 }
 
-.application-details
-  .application-details-main
-  .application-highlights
-  .application-highlight-item
-  .description {
+.application-highlight-item .description {
   font-size: 24px;
   font-weight: 800;
   color: var(--color-primary);
 }
 
-.application-details
-  .application-details-main
-  .application-section
-  .application-textarea {
+.application-textarea {
   width: 90%;
   height: 150px;
   resize: none;
@@ -662,8 +630,7 @@ body {
 }
 
 .application-details-accepted-msg,
-.application-details-rejected-msg,
-.application-details-changes-requested-msg {
+.application-details-rejected-msg {
   font-weight: bold;
   font-size: 18px;
   width: 100%;
@@ -676,10 +643,6 @@ body {
 
 .application-details-rejected-msg {
   color: var(--color-rejected);
-}
-
-.application-details-changes-requested-msg {
-  color: var(--color-pending);
 }
 
 .unauthorized-text {

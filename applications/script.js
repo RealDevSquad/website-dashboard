@@ -6,7 +6,6 @@ import {
   updateApplication,
   getApplicationById,
 } from './utils.js';
-import { showToastMessage } from '../components/toast/script.js';
 let nextLink;
 let isDataLoading = false;
 let totalApplicationCount = 0;

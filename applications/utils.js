@@ -1,5 +1,3 @@
-import { showToastMessage } from '../components/toast/script.js';
-
 const BASE_URL = window.API_BASE_URL;
 
 function createElement({ type, attributes = {}, innerText }) {
@@ -123,8 +121,6 @@ async function updateApplication({ applicationPayload, applicationId }) {
 }
 
 function showToast({ message, type }) {
-  const toast = document.getElementById('toast');
-  if (!toast) return;
   toast.innerText = message;
 
   if (type === 'success') {
