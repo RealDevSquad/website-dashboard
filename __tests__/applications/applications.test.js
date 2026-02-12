@@ -73,13 +73,13 @@ describe('Applications page', () => {
           body: JSON.stringify(superUserForAudiLogs),
         });
       } else if (
-        url === `${STAGING_API_URL}/applications/lavEduxsb2C5Bl4s289P`
+        url === `${STAGING_API_URL}/applications/lavEduxsb2C5Bl4s289P/feedback`
       ) {
         interceptedRequest.respond({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({
-            message: 'application updated successfully!',
+            message: 'Application feedback submitted successfully',
           }),
           headers: {
             'Access-Control-Allow-Origin': '*',
@@ -355,7 +355,7 @@ describe('Applications page', () => {
     ).toBe(false);
     const toastMessage = await page.$('[data-testid="toast-message"]');
     expect(await toastMessage.evaluate((el) => el.textContent)).toBe(
-      'application updated successfully!',
+      'Application feedback submitted successfully',
     );
   });
 

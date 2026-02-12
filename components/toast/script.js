@@ -51,7 +51,7 @@ function showToastMessage({ isDev, oldToastFunction, type, message }) {
   if (isDev) {
     createToast(type, message);
   } else if (oldToastFunction.length === 1) {
-    oldToastFunction(message);
+    oldToastFunction({ message, type });
   } else {
     oldToastFunction(type, message);
   }

@@ -32,6 +32,10 @@ const applicationAcceptButton = document.querySelector(
 const applicationRejectButton = document.querySelector(
   '.application-details-reject',
 );
+const applicationRequestChangesButton = document.querySelector(
+  '.application-details-request-changes',
+);
+
 const applyFilterButton = document.getElementById('apply-filter-button');
 const applicationContainer = document.querySelector('.application-container');
 const clearButton = document.getElementById('clear-button');
@@ -81,18 +85,30 @@ let currentApplicationId;
 
 let status = 'all';
 
-function updateUserApplication({ isAccepted }) {
+function updateUserApplication({ status }) {
   const applicationTextarea = document.querySelector('.application-textarea');
-  let status;
-  const payload = {};
+  const feedback =
+    applicationTextarea && applicationTextarea.value
+      ? applicationTextarea.value.trim()
+      : '';
 
-  if (isAccepted) status = 'accepted';
-  else status = 'rejected';
+  if (status === 'changes_requested' && !feedback) {
+    showToastMessage({
+      isDev,
+      oldToastFunction: showToast,
+      type: 'error',
+      message: 'Please provide feedback before requesting changes.',
+    });
+    if (applicationTextarea) applicationTextarea.focus();
+    return;
+  }
 
-  payload['status'] = status;
+  const payload = {
+    status,
+  };
 
-  if (applicationTextarea.value) {
-    payload.feedback = applicationTextarea.value;
+  if (feedback) {
+    payload.feedback = feedback;
   }
 
   updateApplication({
@@ -100,13 +116,11 @@ function updateUserApplication({ isAccepted }) {
     applicationPayload: payload,
   })
     .then((res) => {
-      const updatedFeedback = payload.feedback || '';
-      applicationTextarea.value = updatedFeedback;
       showToastMessage({
         isDev,
         oldToastFunction: showToast,
         type: 'success',
-        message: res.message,
+        message: res.message || 'Application updated successfully!',
       });
       setTimeout(() => closeApplicationDetails(), 1000);
     })
@@ -115,7 +129,7 @@ function updateUserApplication({ isAccepted }) {
         isDev,
         oldToastFunction: showToast,
         type: 'error',
-        message: error.message,
+        message: error.message || 'Failed to update application',
       });
     });
 }
@@ -150,6 +164,12 @@ function closeApplicationDetails() {
   if (applicationRejectedMsg) {
     applicationRejectedMsg.remove();
   }
+  const applicationChangesRequestedMsg = document.querySelector(
+    '.application-details-changes-requested-msg',
+  );
+  if (applicationChangesRequestedMsg) {
+    applicationChangesRequestedMsg.remove();
+  }
   removeQueryParamInUrl('id');
 }
 
@@ -166,6 +186,19 @@ function openApplicationDetails(application) {
       {
         title: 'Status',
         description: application.status,
+        isStatus: true,
+      },
+      {
+        title: 'Score',
+        description:
+          application.score !== undefined ? application.score : 'N/A',
+        isHighlight: true,
+      },
+      {
+        title: 'Nudge Count',
+        description:
+          application.nudgeCount !== undefined ? application.nudgeCount : 'N/A',
+        isHighlight: true,
       },
       {
         title: 'Introduction',
@@ -210,26 +243,52 @@ function openApplicationDetails(application) {
 
   applicationDetailsMain.appendChild(title);
 
-  selectedApplication.applicationDetails.forEach((application) => {
+  const highlightsSection = createElement({
+    type: 'div',
+    attributes: { class: 'application-highlights' },
+  });
+
+  selectedApplication.applicationDetails.forEach((detail) => {
     const applicationSection = createElement({
       type: 'div',
-      attributes: { class: 'application-section' },
+      attributes: {
+        class: `application-section ${
+          detail.isHighlight ? 'application-highlight-item' : ''
+        }`.trim(),
+      },
     });
     const applicationSectionTitle = createElement({
       type: 'h2',
       attributes: { class: 'section-title' },
-      innerText: application.title,
+      innerText: detail.title,
     });
+
     const applicationSectionDescription = createElement({
       type: 'p',
-      attributes: { class: 'description' },
-      innerText: application.description,
+      attributes: {
+        class: `description ${
+          detail.isStatus
+            ? `status-badge status-${detail.description?.toLowerCase()}`
+            : ''
+        }`.trim(),
+      },
+      innerText: detail.description,
     });
 
     applicationSection.appendChild(applicationSectionTitle);
     applicationSection.appendChild(applicationSectionDescription);
-    applicationDetailsMain.appendChild(applicationSection);
+
+    if (detail.isHighlight) {
+      highlightsSection.appendChild(applicationSection);
+    } else {
+      applicationDetailsMain.appendChild(applicationSection);
+    }
   });
+
+  if (highlightsSection.children.length > 0) {
+    const titleElement = applicationDetailsMain.querySelector('.title');
+    titleElement.insertAdjacentElement('afterend', highlightsSection);
+  }
 
   const applicationSection = createElement({
     type: 'div',
@@ -242,22 +301,38 @@ function openApplicationDetails(application) {
     innerText: 'Add Feedback',
   });
 
+  let feedbackText = '';
+  if (typeof application.feedback === 'string') {
+    feedbackText = application.feedback;
+  } else if (Array.isArray(application.feedback)) {
+    feedbackText = application.feedback
+      .map((f) => (typeof f === 'string' ? f : f.feedback || ''))
+      .filter((f) => f)
+      .join('\n');
+  } else if (application.feedback && typeof application.feedback === 'object') {
+    feedbackText = application.feedback.feedback || '';
+  }
+
   const applicationTextArea = createElement({
     type: 'textarea',
     attributes: {
       class: 'application-textarea',
       placeHolder: 'Add Feedback here',
     },
-    innerText: application.feedback || '',
+    innerText: feedbackText,
   });
 
   applicationSection.appendChild(applicationSectionTitle);
   applicationSection.appendChild(applicationTextArea);
   applicationDetailsMain.appendChild(applicationSection);
 
-  if (application.status === 'rejected') {
+  const currentStatus = application.status?.toLowerCase();
+
+  if (currentStatus === 'rejected') {
     applicationAcceptButton.classList.add('hidden');
     applicationRejectButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
+
     const applicationDetailsRejectedMsg = createElement({
       type: 'p',
       attributes: {
@@ -266,9 +341,11 @@ function openApplicationDetails(application) {
       innerText: 'Application is already rejected',
     });
     applicationDetailsActionsContainer.append(applicationDetailsRejectedMsg);
-  } else if (application.status === 'accepted') {
+  } else if (currentStatus === 'accepted') {
     applicationAcceptButton.classList.add('hidden');
     applicationRejectButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
+
     const applicationDetailsAcceptedMsg = createElement({
       type: 'p',
       attributes: {
@@ -277,6 +354,21 @@ function openApplicationDetails(application) {
       innerText: 'Application was already accepted',
     });
     applicationDetailsActionsContainer.append(applicationDetailsAcceptedMsg);
+  } else if (currentStatus === 'changes_requested') {
+    applicationAcceptButton.classList.add('hidden');
+    applicationRejectButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
+
+    const applicationDetailsChangesRequestedMsg = createElement({
+      type: 'p',
+      attributes: {
+        class: 'application-details-changes-requested-msg',
+      },
+      innerText: 'Changes were already requested',
+    });
+    applicationDetailsActionsContainer.append(
+      applicationDetailsChangesRequestedMsg,
+    );
   } else {
     applicationRejectButton.disabled = false;
     applicationRejectButton.style.cursor = 'pointer';
@@ -287,6 +379,11 @@ function openApplicationDetails(application) {
     applicationAcceptButton.disabled = false;
     applicationAcceptButton.style.cursor = 'pointer';
     applicationAcceptButton.classList.remove('disable-button');
+
+    applicationRequestChangesButton.classList.remove('hidden');
+    applicationRequestChangesButton.disabled = false;
+    applicationRequestChangesButton.style.cursor = 'pointer';
+    applicationRequestChangesButton.classList.remove('disable-button');
   }
 }
 
@@ -635,8 +732,11 @@ closeDropdownBtn.addEventListener('click', () => {
 });
 
 applicationAcceptButton.addEventListener('click', () =>
-  updateUserApplication({ isAccepted: true }),
+  updateUserApplication({ status: 'accepted' }),
 );
 applicationRejectButton.addEventListener('click', () =>
-  updateUserApplication({ isAccepted: false }),
+  updateUserApplication({ status: 'rejected' }),
 );
+applicationRequestChangesButton.addEventListener('click', () => {
+  updateUserApplication({ status: 'changes_requested' });
+});
