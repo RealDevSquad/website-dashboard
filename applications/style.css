@@ -480,7 +480,10 @@ body {
 }
 
 .application-details .application-details-actions .application-details-reject,
-.application-details .application-details-actions .application-details-accept {
+.application-details .application-details-actions .application-details-accept,
+.application-details
+  .application-details-actions
+  .application-details-request-changes {
   cursor: pointer;
   border: none;
   height: 95%;
@@ -495,7 +498,7 @@ body {
   color: var(--red-color);
   background-color: white;
   margin: 0 auto;
-  width: 40%;
+  width: 30%;
   border: 2px solid var(--red-color);
 }
 
@@ -523,7 +526,38 @@ body {
 .application-details .application-details-actions .application-details-accept {
   background: var(--color-primary);
   margin: 0 auto;
-  width: 40%;
+  width: 30%;
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes {
+  background: white;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  margin: 0 auto;
+  width: 30%;
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes:is(:hover, :active, :focus-visible) {
+  background: var(--color-primary);
+  color: var(--white);
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes:hover {
+  transform: scale(1.05);
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes:active {
+  animation: bounceBackAnimation 0.4s ease forwards;
 }
 
 .application-details

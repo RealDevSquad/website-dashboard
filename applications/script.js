@@ -3,7 +3,7 @@ import {
   getApplications,
   getIsSuperUser,
   showToast,
-  updateApplication,
+  submitApplicationFeedback,
   getApplicationById,
 } from './utils.js';
 let nextLink;
@@ -31,6 +31,9 @@ const applicationAcceptButton = document.querySelector(
 );
 const applicationRejectButton = document.querySelector(
   '.application-details-reject',
+);
+const applicationRequestChangesButton = document.querySelector(
+  '.application-details-request-changes',
 );
 const applyFilterButton = document.getElementById('apply-filter-button');
 const applicationContainer = document.querySelector('.application-container');
@@ -81,27 +84,26 @@ let currentApplicationId;
 
 let status = 'all';
 
-function updateUserApplication({ isAccepted }) {
+function updateUserApplication({ status: actionStatus }) {
   const applicationTextarea = document.querySelector('.application-textarea');
-  let status;
-  const payload = {};
+  const feedbackText = (applicationTextarea?.value ?? '').trim();
 
-  if (isAccepted) status = 'accepted';
-  else status = 'rejected';
-
-  payload['status'] = status;
-
-  if (applicationTextarea.value) {
-    payload.feedback = applicationTextarea.value;
+  if (actionStatus === 'changes_requested' && !feedbackText) {
+    showToastMessage({
+      isDev,
+      oldToastFunction: showToast,
+      type: 'error',
+      message: 'Feedback is required when requesting changes.',
+    });
+    return;
   }
 
-  updateApplication({
+  submitApplicationFeedback({
     applicationId: currentApplicationId,
-    applicationPayload: payload,
+    status: actionStatus,
+    feedback: feedbackText || undefined,
   })
     .then((res) => {
-      const updatedFeedback = payload.feedback || '';
-      applicationTextarea.value = updatedFeedback;
       showToastMessage({
         isDev,
         oldToastFunction: showToast,
@@ -115,7 +117,7 @@ function updateUserApplication({ isAccepted }) {
         isDev,
         oldToastFunction: showToast,
         type: 'error',
-        message: error.message,
+        message: error.message || 'Failed to submit feedback.',
       });
     });
 }
@@ -246,9 +248,9 @@ function openApplicationDetails(application) {
     type: 'textarea',
     attributes: {
       class: 'application-textarea',
-      placeHolder: 'Add Feedback here',
+      placeHolder: 'Add Feedback here (required for Request changes)',
     },
-    innerText: application.feedback || '',
+    innerText: '',
   });
 
   applicationSection.appendChild(applicationSectionTitle);
@@ -257,6 +259,7 @@ function openApplicationDetails(application) {
 
   if (application.status === 'rejected') {
     applicationAcceptButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
     applicationRejectButton.classList.add('hidden');
     const applicationDetailsRejectedMsg = createElement({
       type: 'p',
@@ -268,6 +271,7 @@ function openApplicationDetails(application) {
     applicationDetailsActionsContainer.append(applicationDetailsRejectedMsg);
   } else if (application.status === 'accepted') {
     applicationAcceptButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
     applicationRejectButton.classList.add('hidden');
     const applicationDetailsAcceptedMsg = createElement({
       type: 'p',
@@ -282,7 +286,10 @@ function openApplicationDetails(application) {
     applicationRejectButton.style.cursor = 'pointer';
     applicationRejectButton.classList.remove('disable-button');
     applicationRejectButton.classList.remove('hidden');
-
+    applicationRequestChangesButton.disabled = false;
+    applicationRequestChangesButton.style.cursor = 'pointer';
+    applicationRequestChangesButton.classList.remove('disable-button');
+    applicationRequestChangesButton.classList.remove('hidden');
     applicationAcceptButton.classList.remove('hidden');
     applicationAcceptButton.disabled = false;
     applicationAcceptButton.style.cursor = 'pointer';
@@ -635,8 +642,11 @@ closeDropdownBtn.addEventListener('click', () => {
 });
 
 applicationAcceptButton.addEventListener('click', () =>
-  updateUserApplication({ isAccepted: true }),
+  updateUserApplication({ status: 'accepted' }),
+);
+applicationRequestChangesButton.addEventListener('click', () =>
+  updateUserApplication({ status: 'changes_requested' }),
 );
 applicationRejectButton.addEventListener('click', () =>
-  updateUserApplication({ isAccepted: false }),
+  updateUserApplication({ status: 'rejected' }),
 );
