@@ -75,17 +75,10 @@ describe('Applications page', () => {
       } else if (
         url === `${STAGING_API_URL}/applications/lavEduxsb2C5Bl4s289P`
       ) {
-        const method = interceptedRequest.method();
-        const body =
-          method === 'GET'
-            ? JSON.stringify({ application: pendingApplications[0] })
-            : JSON.stringify({
-                message: 'Application feedback submitted successfully',
-              });
         interceptedRequest.respond({
           status: 200,
           contentType: 'application/json',
-          body,
+          body: JSON.stringify({ application: pendingApplications[0] }),
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',

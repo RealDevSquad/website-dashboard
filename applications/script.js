@@ -177,11 +177,11 @@ function openApplicationDetails(application) {
       },
       {
         title: 'Score',
-        description: application.score,
+        description: application.score ?? 'N/A',
       },
       {
         title: 'Nudge Count',
-        description: application.nudgeCount,
+        description: application.nudgeCount ?? 'N/A',
       },
       {
         title: 'Introduction',
@@ -278,7 +278,7 @@ function openApplicationDetails(application) {
     type: 'textarea',
     attributes: {
       class: 'application-textarea',
-      placeHolder: 'Add Feedback here (required for Request changes)',
+      placeholder: 'Add Feedback here (required for Request changes)',
     },
     innerText: '',
   });
