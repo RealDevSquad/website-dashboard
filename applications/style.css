@@ -15,6 +15,14 @@
     0px 4px 8px 3px rgba(0, 0, 0, 0.15);
   --color-green: green;
   --color-red-variant1: #f43030;
+  --color-changes-bg: #ffedd5;
+  --color-changes-text: #9a3412;
+  --color-accepted-bg: #d1fae5;
+  --color-accepted-text: #065f46;
+  --color-rejected-bg: #fee2e2;
+  --color-rejected-text: #991b1b;
+  --color-pending-bg: #f3f4f6;
+  --color-pending-text: #374151;
 }
 
 .user-text-index {
@@ -465,23 +473,23 @@ body {
 }
 
 .status-badge--accepted {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: var(--color-accepted-bg);
+  color: var(--color-accepted-text);
 }
 
 .status-badge--rejected {
-  background-color: #fee2e2;
-  color: #991b1b;
+  background-color: var(--color-rejected-bg);
+  color: var(--color-rejected-text);
 }
 
 .status-badge--changes_requested {
-  background-color: #ffedd5;
-  color: #9a3412;
+  background-color: var(--color-changes-bg);
+  color: var(--color-changes-text);
 }
 
 .status-badge--pending {
-  background-color: #f3f4f6;
-  color: #374151;
+  background-color: var(--color-pending-bg);
+  color: var(--color-pending-text);
 }
 
 .application-details
@@ -561,9 +569,9 @@ body {
 .application-details
   .application-details-actions
   .application-details-request-changes {
-  background: #ffedd5;
-  color: #9a3412;
-  border: 2px solid #9a3412;
+  background: var(--color-changes-bg);
+  color: var(--color-changes-text);
+  border: 2px solid var(--color-changes-text);
   margin: 0 auto;
   width: 30%;
 }
@@ -571,7 +579,7 @@ body {
 .application-details
   .application-details-actions
   .application-details-request-changes:is(:hover, :active, :focus-visible) {
-  background: #9a3412;
+  background: var(--color-changes-text);
   color: var(--white);
   transition: transform 0.2s ease;
   will-change: transform;
@@ -631,7 +639,7 @@ body {
 }
 
 .application-details-changes-msg {
-  color: #9a3412;
+  color: var(--color-changes-text);
 }
 
 .unauthorized-text {

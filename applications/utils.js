@@ -97,7 +97,7 @@ async function getIsSuperUser(isDev) {
 async function submitApplicationFeedback({ applicationId, status, feedback }) {
   try {
     const body = { status };
-    if (feedback !== undefined && feedback !== '') {
+    if (feedback) {
       body.feedback = feedback;
     }
     const res = await fetch(

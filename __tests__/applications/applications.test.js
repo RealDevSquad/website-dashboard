@@ -87,8 +87,7 @@ describe('Applications page', () => {
         });
       } else if (
         interceptedRequest.method() === 'PATCH' &&
-        url.includes('/applications/') &&
-        url.endsWith('/feedback')
+        url === `${STAGING_API_URL}/applications/lavEduxsb2C5Bl4s289P/feedback`
       ) {
         interceptedRequest.respond({
           status: 200,
@@ -227,7 +226,6 @@ describe('Applications page', () => {
     });
     await page.waitForFunction(
       () => document.querySelectorAll('.application-card').length >= 12,
-      { timeout: 10000 },
     );
     applicationCards = await page.$$('.application-card');
     expect(applicationCards.length).toBe(12);

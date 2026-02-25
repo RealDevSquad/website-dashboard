@@ -32,8 +32,8 @@ const applicationAcceptButton = document.querySelector(
 const applicationRejectButton = document.querySelector(
   '.application-details-reject',
 );
-const applicationRequestChangesButton = document.querySelector(
-  '.application-details-request-changes',
+const applicationRequestChangesButton = document.getElementById(
+  'application-details-request-changes',
 );
 const applyFilterButton = document.getElementById('apply-filter-button');
 const applicationContainer = document.querySelector('.application-container');
