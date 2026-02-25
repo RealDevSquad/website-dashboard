@@ -176,6 +176,14 @@ function openApplicationDetails(application) {
         description: application.status,
       },
       {
+        title: 'Score',
+        description: application.score,
+      },
+      {
+        title: 'Nudge Count',
+        description: application.nudgeCount,
+      },
+      {
         title: 'Introduction',
         description: application.intro.introduction,
       },
