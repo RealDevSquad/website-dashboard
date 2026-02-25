@@ -146,11 +146,17 @@ function closeApplicationDetails() {
   const applicationRejectedMsg = document.querySelector(
     '.application-details-rejected-msg',
   );
+  const applicationChangesMsg = document.querySelector(
+    '.application-details-changes-msg',
+  );
   if (applicationAcceptedMsg) {
     applicationAcceptedMsg.remove();
   }
   if (applicationRejectedMsg) {
     applicationRejectedMsg.remove();
+  }
+  if (applicationChangesMsg) {
+    applicationChangesMsg.remove();
   }
   removeQueryParamInUrl('id');
 }
@@ -222,11 +228,27 @@ function openApplicationDetails(application) {
       attributes: { class: 'section-title' },
       innerText: application.title,
     });
-    const applicationSectionDescription = createElement({
-      type: 'p',
-      attributes: { class: 'description' },
-      innerText: application.description,
-    });
+
+    let applicationSectionDescription;
+    if (application.title === 'Status') {
+      const statusLabel = application.description
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+      applicationSectionDescription = createElement({
+        type: 'span',
+        attributes: {
+          class: `status-badge status-badge--${application.description}`,
+        },
+        innerText: statusLabel,
+      });
+    } else {
+      applicationSectionDescription = createElement({
+        type: 'p',
+        attributes: { class: 'description' },
+        innerText: application.description,
+      });
+    }
 
     applicationSection.appendChild(applicationSectionTitle);
     applicationSection.appendChild(applicationSectionDescription);
@@ -253,9 +275,11 @@ function openApplicationDetails(application) {
     innerText: '',
   });
 
-  applicationSection.appendChild(applicationSectionTitle);
-  applicationSection.appendChild(applicationTextArea);
-  applicationDetailsMain.appendChild(applicationSection);
+  if (application.status === 'pending') {
+    applicationSection.appendChild(applicationSectionTitle);
+    applicationSection.appendChild(applicationTextArea);
+    applicationDetailsMain.appendChild(applicationSection);
+  }
 
   if (application.status === 'rejected') {
     applicationAcceptButton.classList.add('hidden');
@@ -281,6 +305,18 @@ function openApplicationDetails(application) {
       innerText: 'Application was already accepted',
     });
     applicationDetailsActionsContainer.append(applicationDetailsAcceptedMsg);
+  } else if (application.status === 'changes_requested') {
+    applicationAcceptButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
+    applicationRejectButton.classList.add('hidden');
+    const applicationDetailsChangesMsg = createElement({
+      type: 'p',
+      attributes: {
+        class: 'application-details-changes-msg',
+      },
+      innerText: 'Changes have been requested for this application',
+    });
+    applicationDetailsActionsContainer.append(applicationDetailsChangesMsg);
   } else {
     applicationRejectButton.disabled = false;
     applicationRejectButton.style.cursor = 'pointer';
