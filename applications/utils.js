@@ -124,7 +124,7 @@ async function submitApplicationFeedback({ applicationId, status, feedback }) {
   }
 }
 
-function showToast({ message, type }) {
+function showToast(type, message) {
   toast.innerText = message;
 
   if (type === 'success') {

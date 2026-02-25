@@ -561,9 +561,9 @@ body {
 .application-details
   .application-details-actions
   .application-details-request-changes {
-  background: white;
-  color: var(--color-primary);
-  border: 2px solid var(--color-primary);
+  background: #ffedd5;
+  color: #9a3412;
+  border: 2px solid #9a3412;
   margin: 0 auto;
   width: 30%;
 }
@@ -571,7 +571,7 @@ body {
 .application-details
   .application-details-actions
   .application-details-request-changes:is(:hover, :active, :focus-visible) {
-  background: var(--color-primary);
+  background: #9a3412;
   color: var(--white);
   transition: transform 0.2s ease;
   will-change: transform;
