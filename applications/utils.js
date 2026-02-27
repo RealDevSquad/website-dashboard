@@ -94,20 +94,27 @@ async function getIsSuperUser(isDev) {
   }
 }
 
-async function updateApplication({ applicationPayload, applicationId }) {
+async function submitApplicationFeedback({ applicationId, status, feedback }) {
   try {
-    const res = await fetch(`${BASE_URL}/applications/${applicationId}`, {
-      method: 'PATCH',
-      credentials: 'include',
-      body: JSON.stringify(applicationPayload),
-      headers: {
-        'Content-type': 'application/json',
+    const body = { status };
+    if (feedback) {
+      body.feedback = feedback;
+    }
+    const res = await fetch(
+      `${BASE_URL}/applications/${applicationId}/feedback`,
+      {
+        method: 'PATCH',
+        credentials: 'include',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-type': 'application/json',
+        },
       },
-    });
+    );
 
     if (!res.ok) {
-      const error = await res.json();
-      throw error;
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Request failed (${res.status})`);
     }
 
     const data = await res.json();
@@ -117,7 +124,7 @@ async function updateApplication({ applicationPayload, applicationId }) {
   }
 }
 
-function showToast({ message, type }) {
+function showToast(type, message) {
   toast.innerText = message;
 
   if (type === 'success') {
@@ -141,7 +148,7 @@ export {
   createElement,
   getApplications,
   getApplicationById,
-  updateApplication,
+  submitApplicationFeedback,
   getIsSuperUser,
   showToast,
 };

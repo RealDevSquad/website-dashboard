@@ -15,6 +15,14 @@
     0px 4px 8px 3px rgba(0, 0, 0, 0.15);
   --color-green: green;
   --color-red-variant1: #f43030;
+  --color-changes-bg: #ffedd5;
+  --color-changes-text: #9a3412;
+  --color-accepted-bg: #d1fae5;
+  --color-accepted-text: #065f46;
+  --color-rejected-bg: #fee2e2;
+  --color-rejected-text: #991b1b;
+  --color-pending-bg: #f3f4f6;
+  --color-pending-text: #374151;
 }
 
 .user-text-index {
@@ -455,6 +463,35 @@ body {
   margin: 0;
 }
 
+.status-badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-badge--accepted {
+  background-color: var(--color-accepted-bg);
+  color: var(--color-accepted-text);
+}
+
+.status-badge--rejected {
+  background-color: var(--color-rejected-bg);
+  color: var(--color-rejected-text);
+}
+
+.status-badge--changes_requested {
+  background-color: var(--color-changes-bg);
+  color: var(--color-changes-text);
+}
+
+.status-badge--pending {
+  background-color: var(--color-pending-bg);
+  color: var(--color-pending-text);
+}
+
 .application-details
   .application-details-main
   .application-section
@@ -480,7 +517,10 @@ body {
 }
 
 .application-details .application-details-actions .application-details-reject,
-.application-details .application-details-actions .application-details-accept {
+.application-details .application-details-actions .application-details-accept,
+.application-details
+  .application-details-actions
+  .application-details-request-changes {
   cursor: pointer;
   border: none;
   height: 95%;
@@ -495,7 +535,7 @@ body {
   color: var(--red-color);
   background-color: white;
   margin: 0 auto;
-  width: 40%;
+  width: 30%;
   border: 2px solid var(--red-color);
 }
 
@@ -523,7 +563,38 @@ body {
 .application-details .application-details-actions .application-details-accept {
   background: var(--color-primary);
   margin: 0 auto;
-  width: 40%;
+  width: 30%;
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes {
+  background: var(--color-changes-bg);
+  color: var(--color-changes-text);
+  border: 2px solid var(--color-changes-text);
+  margin: 0 auto;
+  width: 30%;
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes:is(:hover, :active, :focus-visible) {
+  background: var(--color-changes-text);
+  color: var(--white);
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes:hover {
+  transform: scale(1.05);
+}
+
+.application-details
+  .application-details-actions
+  .application-details-request-changes:active {
+  animation: bounceBackAnimation 0.4s ease forwards;
 }
 
 .application-details
@@ -551,7 +622,8 @@ body {
 }
 
 .application-details-accepted-msg,
-.application-details-rejected-msg {
+.application-details-rejected-msg,
+.application-details-changes-msg {
   font-weight: bold;
   font-size: 18px;
   width: 100%;
@@ -564,6 +636,10 @@ body {
 
 .application-details-rejected-msg {
   color: var(--red-color);
+}
+
+.application-details-changes-msg {
+  color: var(--color-changes-text);
 }
 
 .unauthorized-text {

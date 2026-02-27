@@ -3,7 +3,7 @@ import {
   getApplications,
   getIsSuperUser,
   showToast,
-  updateApplication,
+  submitApplicationFeedback,
   getApplicationById,
 } from './utils.js';
 let nextLink;
@@ -31,6 +31,9 @@ const applicationAcceptButton = document.querySelector(
 );
 const applicationRejectButton = document.querySelector(
   '.application-details-reject',
+);
+const applicationRequestChangesButton = document.getElementById(
+  'application-details-request-changes',
 );
 const applyFilterButton = document.getElementById('apply-filter-button');
 const applicationContainer = document.querySelector('.application-container');
@@ -81,27 +84,26 @@ let currentApplicationId;
 
 let status = 'all';
 
-function updateUserApplication({ isAccepted }) {
+function updateUserApplication({ status: actionStatus }) {
   const applicationTextarea = document.querySelector('.application-textarea');
-  let status;
-  const payload = {};
+  const feedbackText = (applicationTextarea?.value ?? '').trim();
 
-  if (isAccepted) status = 'accepted';
-  else status = 'rejected';
-
-  payload['status'] = status;
-
-  if (applicationTextarea.value) {
-    payload.feedback = applicationTextarea.value;
+  if (actionStatus === 'changes_requested' && !feedbackText) {
+    showToastMessage({
+      isDev,
+      oldToastFunction: showToast,
+      type: 'error',
+      message: 'Feedback is required when requesting changes.',
+    });
+    return;
   }
 
-  updateApplication({
+  submitApplicationFeedback({
     applicationId: currentApplicationId,
-    applicationPayload: payload,
+    status: actionStatus,
+    feedback: feedbackText || undefined,
   })
     .then((res) => {
-      const updatedFeedback = payload.feedback || '';
-      applicationTextarea.value = updatedFeedback;
       showToastMessage({
         isDev,
         oldToastFunction: showToast,
@@ -115,7 +117,7 @@ function updateUserApplication({ isAccepted }) {
         isDev,
         oldToastFunction: showToast,
         type: 'error',
-        message: error.message,
+        message: error.message || 'Failed to submit feedback.',
       });
     });
 }
@@ -144,11 +146,17 @@ function closeApplicationDetails() {
   const applicationRejectedMsg = document.querySelector(
     '.application-details-rejected-msg',
   );
+  const applicationChangesMsg = document.querySelector(
+    '.application-details-changes-msg',
+  );
   if (applicationAcceptedMsg) {
     applicationAcceptedMsg.remove();
   }
   if (applicationRejectedMsg) {
     applicationRejectedMsg.remove();
+  }
+  if (applicationChangesMsg) {
+    applicationChangesMsg.remove();
   }
   removeQueryParamInUrl('id');
 }
@@ -166,6 +174,14 @@ function openApplicationDetails(application) {
       {
         title: 'Status',
         description: application.status,
+      },
+      {
+        title: 'Score',
+        description: application.score ?? 'N/A',
+      },
+      {
+        title: 'Nudge Count',
+        description: application.nudgeCount ?? 'N/A',
       },
       {
         title: 'Introduction',
@@ -220,11 +236,27 @@ function openApplicationDetails(application) {
       attributes: { class: 'section-title' },
       innerText: application.title,
     });
-    const applicationSectionDescription = createElement({
-      type: 'p',
-      attributes: { class: 'description' },
-      innerText: application.description,
-    });
+
+    let applicationSectionDescription;
+    if (application.title === 'Status') {
+      const statusLabel = application.description
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+      applicationSectionDescription = createElement({
+        type: 'span',
+        attributes: {
+          class: `status-badge status-badge--${application.description}`,
+        },
+        innerText: statusLabel,
+      });
+    } else {
+      applicationSectionDescription = createElement({
+        type: 'p',
+        attributes: { class: 'description' },
+        innerText: application.description,
+      });
+    }
 
     applicationSection.appendChild(applicationSectionTitle);
     applicationSection.appendChild(applicationSectionDescription);
@@ -246,17 +278,20 @@ function openApplicationDetails(application) {
     type: 'textarea',
     attributes: {
       class: 'application-textarea',
-      placeHolder: 'Add Feedback here',
+      placeholder: 'Add Feedback here (required for Request changes)',
     },
-    innerText: application.feedback || '',
+    innerText: '',
   });
 
-  applicationSection.appendChild(applicationSectionTitle);
-  applicationSection.appendChild(applicationTextArea);
-  applicationDetailsMain.appendChild(applicationSection);
+  if (application.status === 'pending') {
+    applicationSection.appendChild(applicationSectionTitle);
+    applicationSection.appendChild(applicationTextArea);
+    applicationDetailsMain.appendChild(applicationSection);
+  }
 
   if (application.status === 'rejected') {
     applicationAcceptButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
     applicationRejectButton.classList.add('hidden');
     const applicationDetailsRejectedMsg = createElement({
       type: 'p',
@@ -268,6 +303,7 @@ function openApplicationDetails(application) {
     applicationDetailsActionsContainer.append(applicationDetailsRejectedMsg);
   } else if (application.status === 'accepted') {
     applicationAcceptButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
     applicationRejectButton.classList.add('hidden');
     const applicationDetailsAcceptedMsg = createElement({
       type: 'p',
@@ -277,12 +313,27 @@ function openApplicationDetails(application) {
       innerText: 'Application was already accepted',
     });
     applicationDetailsActionsContainer.append(applicationDetailsAcceptedMsg);
+  } else if (application.status === 'changes_requested') {
+    applicationAcceptButton.classList.add('hidden');
+    applicationRequestChangesButton.classList.add('hidden');
+    applicationRejectButton.classList.add('hidden');
+    const applicationDetailsChangesMsg = createElement({
+      type: 'p',
+      attributes: {
+        class: 'application-details-changes-msg',
+      },
+      innerText: 'Changes have been requested for this application',
+    });
+    applicationDetailsActionsContainer.append(applicationDetailsChangesMsg);
   } else {
     applicationRejectButton.disabled = false;
     applicationRejectButton.style.cursor = 'pointer';
     applicationRejectButton.classList.remove('disable-button');
     applicationRejectButton.classList.remove('hidden');
-
+    applicationRequestChangesButton.disabled = false;
+    applicationRequestChangesButton.style.cursor = 'pointer';
+    applicationRequestChangesButton.classList.remove('disable-button');
+    applicationRequestChangesButton.classList.remove('hidden');
     applicationAcceptButton.classList.remove('hidden');
     applicationAcceptButton.disabled = false;
     applicationAcceptButton.style.cursor = 'pointer';
@@ -635,8 +686,11 @@ closeDropdownBtn.addEventListener('click', () => {
 });
 
 applicationAcceptButton.addEventListener('click', () =>
-  updateUserApplication({ isAccepted: true }),
+  updateUserApplication({ status: 'accepted' }),
+);
+applicationRequestChangesButton.addEventListener('click', () =>
+  updateUserApplication({ status: 'changes_requested' }),
 );
 applicationRejectButton.addEventListener('click', () =>
-  updateUserApplication({ isAccepted: false }),
+  updateUserApplication({ status: 'rejected' }),
 );

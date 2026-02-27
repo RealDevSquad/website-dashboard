@@ -78,8 +78,22 @@ describe('Applications page', () => {
         interceptedRequest.respond({
           status: 200,
           contentType: 'application/json',
+          body: JSON.stringify({ application: pendingApplications[0] }),
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
+        });
+      } else if (
+        interceptedRequest.method() === 'PATCH' &&
+        url === `${STAGING_API_URL}/applications/lavEduxsb2C5Bl4s289P/feedback`
+      ) {
+        interceptedRequest.respond({
+          status: 200,
+          contentType: 'application/json',
           body: JSON.stringify({
-            message: 'application updated successfully!',
+            message: 'Application feedback submitted successfully',
           }),
           headers: {
             'Access-Control-Allow-Origin': '*',
@@ -210,7 +224,9 @@ describe('Applications page', () => {
         element.scrollIntoView({ behavior: 'auto' });
       }
     });
-    await page.waitForNetworkIdle();
+    await page.waitForFunction(
+      () => document.querySelectorAll('.application-card').length >= 12,
+    );
     applicationCards = await page.$$('.application-card');
     expect(applicationCards.length).toBe(12);
   });
@@ -355,7 +371,7 @@ describe('Applications page', () => {
     ).toBe(false);
     const toastMessage = await page.$('[data-testid="toast-message"]');
     expect(await toastMessage.evaluate((el) => el.textContent)).toBe(
-      'application updated successfully!',
+      'Application feedback submitted successfully',
     );
   });
 
@@ -370,5 +386,68 @@ describe('Applications page', () => {
     await page.waitForNetworkIdle();
     const applicationCardElements = await page.$$('.application-card');
     expect(applicationCardElements.length).toBe(acceptedApplications.length);
+  });
+
+  it('should show Request changes button when application details modal is open for a pending application', async () => {
+    await page.goto(
+      `${LOCAL_TEST_PAGE_URL}/applications?dev=true&status=pending`,
+    );
+    await page.waitForSelector('.application-card');
+    await page.click('.application-card');
+    await page.waitForSelector('.application-details:not(.hidden)');
+    const requestChangesButton = await page.$(
+      '.application-details-request-changes',
+    );
+    expect(requestChangesButton).toBeTruthy();
+    const isHidden = await requestChangesButton.evaluate((el) =>
+      el.classList.contains('hidden'),
+    );
+    expect(isHidden).toBe(false);
+  });
+
+  it('should show error toast when clicking Request changes without feedback text', async () => {
+    await page.goto(
+      `${LOCAL_TEST_PAGE_URL}/applications?dev=true&status=pending`,
+    );
+    await page.waitForSelector('.application-card');
+    await page.click('.application-card');
+    await page.waitForSelector('.application-details:not(.hidden)');
+    await page.click('.application-details-request-changes');
+    await page.waitForSelector('[data-testid="toast-component"].show');
+    const toastComponent = await page.$('[data-testid="toast-component"]');
+    expect(
+      await toastComponent.evaluate((el) =>
+        el.classList.contains('error__toast'),
+      ),
+    ).toBe(true);
+    const toastMessage = await page.$('[data-testid="toast-message"]');
+    expect(await toastMessage.evaluate((el) => el.textContent)).toBe(
+      'Feedback is required when requesting changes.',
+    );
+  });
+
+  it('should show success toast when submitting Request changes with feedback text', async () => {
+    await page.goto(
+      `${LOCAL_TEST_PAGE_URL}/applications?dev=true&status=pending`,
+    );
+    await page.waitForSelector('.application-card');
+    await page.click('.application-card');
+    await page.waitForSelector('.application-details:not(.hidden)');
+    await page.type(
+      '.application-textarea',
+      'Please add more details on skills',
+    );
+    await page.click('.application-details-request-changes');
+    await page.waitForSelector('[data-testid="toast-component"].show');
+    const toastComponent = await page.$('[data-testid="toast-component"]');
+    expect(
+      await toastComponent.evaluate((el) =>
+        el.classList.contains('success__toast'),
+      ),
+    ).toBe(true);
+    const toastMessage = await page.$('[data-testid="toast-message"]');
+    expect(await toastMessage.evaluate((el) => el.textContent)).toBe(
+      'Application feedback submitted successfully',
+    );
   });
 });
